@@ -10,7 +10,7 @@ class SQL_Searcher:
     def __init__(self):
         pass
 
-    def create_index(self, root_folder, index_file_name):
+    def create_index(self, root_folder, index_file_name, max_size):
         with open(index_file_name, "w") as output_file:
             for root, dirs, files in os.walk(root_folder):
                 for file in files:
@@ -19,8 +19,9 @@ class SQL_Searcher:
                         file_size = os.stat(os.path.join(root, file)).st_size
                         file_name = os.path.join(root, file)
 
-                        output_text = f"{file_time}\t{file_size}\t{file_name}\n"
-                        output_file.write(output_text)
+                        if file_size < max_size:
+                            output_text = f"{file_time}\t{file_size}\t{file_name}\n"
+                            output_file.write(output_text)
 
     def search_files(self, index_file_name, search_term):
         match_list = list() # The object to return
@@ -46,22 +47,7 @@ class SQL_Searcher:
                     match_list.append(field_formatted)
                     print(f"Found match in file {fields[2]}")
 
-        return match_list
-
-##    def write_match_list(self):
-##        match_list, user_input = self.search_files()
-##        
-##        print(f"{self.ts()} - Started writing output.")
-##        output_file = open(self.output_file_name + "_" + user_input + ".txt", "a")
-##    
-##        for match in match_list:
-##            output_file.write(match + "\n")
-##
-##        output_file.close()
-##        print(f"{self.ts()} - Finished writing output.")
-
-##    def ts(self):
-##        return datetime.datetime.now().strftime("%H:%M:%S")
+        return match_list       
 
 # If this program starts on its own, run the main() function
 if __name__ == "__main__":
@@ -69,16 +55,26 @@ if __name__ == "__main__":
     tool = SQL_Searcher()
    
     # Creating index files
-##    root_folder = r"H:\Timeline\2021"    
-##    index_file_name = "sql_file_index_2021.txt"
-##    tool.create_index(root_folder, index_file_name)
+##    root_folder = r"H:\Timeline\2021"
+##    index_file_name = "index_files\sql_file_index_2021.txt"
+##    max_size = 1000000 # The large files have data in them, ignore those.
+##    tool.create_index(root_folder, index_file_name, max_size)
 
+    # Search index files
+    index_files = [r"H:\Source\Repos\sql_searcher\index_files\sql_file_index_2021.txt",
+                   r"H:\Source\Repos\sql_searcher\index_files\sql_file_index_2020.txt",
+                   r"H:\Source\Repos\sql_searcher\index_files\sql_file_index_2019.txt",
+                   r"H:\Source\Repos\sql_searcher\index_files\sql_file_index_2018.txt",
+                   r"H:\Source\Repos\sql_searcher\index_files\sql_file_index_2017.txt",
+                   r"H:\Source\Repos\sql_searcher\index_files\sql_file_index_2016.txt",
+                   r"H:\Source\Repos\sql_searcher\index_files\sql_file_index_2015.txt"]
 
-    # Searches
-##    for match in tool.search_files("index_files\sql_file_index_2020.txt", "CLM_TRANSACTION_ID"):
-##        fields = match.split("\t")
-##        for field in fields:
-##            print(field)
+    search_term = "last claim"
     
-    tool.search_files("index_files\sql_file_index_2021.txt", "ODS_MDI_TYPE_110")
-
+    tool.search_files(index_files[0], search_term)
+    tool.search_files(index_files[1], search_term)
+    tool.search_files(index_files[2], search_term)
+    tool.search_files(index_files[3], search_term)
+    tool.search_files(index_files[4], search_term)
+    tool.search_files(index_files[5], search_term)
+    tool.search_files(index_files[6], search_term)
